@@ -59,3 +59,9 @@ def verify_password(stored_hash, stored_salt, entered_password):
     new_hash, _ = hash_password(entered_password, stored_salt)
 
     return new_hash == stored_hash
+
+def get_user(username):
+
+    users = load_users()
+
+    return users.get(username)
