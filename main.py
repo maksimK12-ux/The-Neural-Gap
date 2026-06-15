@@ -19,7 +19,7 @@ class NeuralGap:
 
         LoginWindow(root, self.login_success)
 
-    def login_success(self, username):
+        def login_success(self, username):
 
         self.current_user = username
 
@@ -100,3 +100,121 @@ class NeuralGap:
             "Coming Soon",
             "Statistics Dashboard will be added in Part 5."
         )
+
+
+    def open_reaction_test(self):
+
+        self.clear_window()
+
+        self.waiting_for_click = False
+
+        self.reaction_frame = tk.Frame(self.root)
+        self.reaction_frame.pack(expand=True)
+
+        title = tk.Label(
+            self.reaction_frame,
+            text="Reaction Time Test",
+            font=("Arial", 22, "bold")
+        )
+        title.pack(pady=20)
+
+        self.instructions = tk.Label(
+            self.reaction_frame,
+            text="Press Start and wait for GREEN.",
+            font=("Arial", 14)
+        )
+        self.instructions.pack(pady=10)
+
+        self.reaction_button = tk.Button(
+            self.reaction_frame,
+            text="START",
+            width=25,
+            height=5,
+            bg="lightgrey",
+            command=self.start_reaction_round
+        )
+
+        self.reaction_button.pack(pady=20)
+
+        tk.Button(
+            self.reaction_frame,
+            text="Back",
+            command=self.create_main_menu
+        ).pack(pady=10)
+
+    def start_reaction_round(self):
+
+        self.reaction_button.config(
+            text="WAIT...",
+            bg="red",
+            command=self.clicked_too_early
+        )
+
+        delay = random.randint(2000, 5000)
+
+        self.root.after(
+            delay,
+            self.turn_green
+        )
+
+    def clicked_too_early(self):
+
+        messagebox.showwarning(
+            "Too Early!",
+            "You clicked before the signal."
+        )
+
+        self.open_reaction_test()
+
+    def turn_green(self):
+
+        self.waiting_for_click = True
+
+        self.start_time = time.time()
+
+        self.reaction_button.config(
+            text="CLICK!",
+            bg="green",
+            command=self.record_reaction
+        )
+
+    def record_reaction(self):
+
+        if not self.waiting_for_click:
+            return
+
+        reaction_time = (
+            time.time() - self.start_time
+        ) * 1000
+
+        self.save_reaction_result(
+            round(reaction_time, 2)
+        )
+
+        messagebox.showinfo(
+            "Result",
+            f"Reaction Time:\n\n{round(reaction_time,2)} ms"
+        )
+
+        self.open_reaction_test()
+
+    def save_reaction_result(self, score):
+
+        users = load_users()
+
+        users[self.current_user]["results"][
+            "reaction_test"
+        ].append(score)
+
+        save_users(users)
+
+
+if __name__ == "__main__":
+
+    root = tk.Tk()
+
+    app = NeuralGap(root)
+
+    root.mainloop()
+
+
