@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 import random
 import time
+from tests import SequenceMemoryTest, AimTrainer
 
 from authorisation import LoginWindow
 from security import load_users, save_users
@@ -19,7 +20,7 @@ class NeuralGap:
 
         LoginWindow(root, self.login_success)
 
-        def login_success(self, username):
+    def login_success(self, username):
 
         self.current_user = username
 
@@ -61,7 +62,7 @@ class NeuralGap:
             text="Sequence Memory Test",
             width=30,
             height=2,
-            command=self.sequence_coming_soon
+            command=self.open_sequence_test
         ).pack(pady=10)
 
         tk.Button(
@@ -69,7 +70,7 @@ class NeuralGap:
             text="Aim Tracking Test",
             width=30,
             height=2,
-            command=self.aim_coming_soon
+            command=self.open_aim_test
         ).pack(pady=10)
 
         tk.Button(
@@ -80,18 +81,24 @@ class NeuralGap:
             command=self.stats_coming_soon
         ).pack(pady=10)
 
-    def sequence_coming_soon(self):
+    def open_sequence_test(self):
 
-        messagebox.showinfo(
-            "Coming Soon",
-            "Sequence Memory Test will be added in Part 4."
+        self.clear_window()
+
+        SequenceMemoryTest(
+            self.root,
+            self.current_user,
+            self.create_main_menu
         )
 
-    def aim_coming_soon(self):
+    def open_aim_test(self):
 
-        messagebox.showinfo(
-            "Coming Soon",
-            "Aim Trainer will be added in Part 4."
+        self.clear_window()
+
+        AimTrainer(
+            self.root,
+            self.current_user,
+            self.create_main_menu
         )
 
     def stats_coming_soon(self):
