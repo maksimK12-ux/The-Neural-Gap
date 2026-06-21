@@ -6,6 +6,7 @@ from tests import SequenceMemoryTest, AimTrainer
 
 from authorisation import LoginWindow
 from security import load_users, save_users
+from results import AnalyticsDashboard
 
 
 class NeuralGap:
@@ -78,7 +79,7 @@ class NeuralGap:
             text="View Statistics",
             width=30,
             height=2,
-            command=self.stats_coming_soon
+            command=self.open_statistics
         ).pack(pady=10)
 
     def open_sequence_test(self):
@@ -101,11 +102,14 @@ class NeuralGap:
             self.create_main_menu
         )
 
-    def stats_coming_soon(self):
+    def open_statistics(self):
 
-        messagebox.showinfo(
-            "Coming Soon",
-            "Statistics Dashboard will be added in Part 5."
+        self.clear_window()
+
+        AnalyticsDashboard(
+            self.root,
+            self.current_user,
+            self.create_main_menu
         )
 
 
