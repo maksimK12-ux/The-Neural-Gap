@@ -16,6 +16,7 @@ class NeuralGap:
         self.root = root
         self.root.title("The Neural Gap")
         self.root.geometry("900x600")
+        self.root.configure(bg="white")
 
         self.current_user = None
 
