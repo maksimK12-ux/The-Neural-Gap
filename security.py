@@ -24,9 +24,8 @@ def load_users():
     ensure_files_exist()
 
     with open(USERS_FILE, "r") as file:
-        return json.load(file)
-
-
+        content = file.read().strip()
+        return json.loads(content) if content else {}
 
 def save_users(users_data):
     """Saves all users to the JSON database."""

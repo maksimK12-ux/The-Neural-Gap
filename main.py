@@ -83,6 +83,35 @@ class NeuralGap:
             command=self.open_statistics
         ).pack(pady=10)
 
+        tk.Button(
+            self.root,
+            text="Settings",
+            width=30,
+            height=2,
+            command=self.show_settings
+        ).pack(side="bottom", pady=20)
+
+    def show_settings(self):
+
+        messagebox.showinfo(
+            "Settings",
+            """
+How the program works:
+
+Reaction Time Test:
+Press Start, wait for green, then click as fast as possible.
+
+Sequence Memory Test:
+Watch the highlighted squares, then repeat the pattern.
+
+Aim Tracking Test:
+Press Start, then click 10 red targets as fast as possible.
+
+Statistics:
+Your results are saved to your account and used for averages, best scores, and progress charts.
+"""
+        )
+
     def open_sequence_test(self):
 
         self.clear_window()

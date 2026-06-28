@@ -100,6 +100,10 @@ class AnalyticsDashboard:
             data["aim_trainer"]
         )
 
+        aim_best = self.best(
+            data["aim_trainer"]
+        )
+
         messagebox.showinfo(
             "Detailed Statistics",
             f"""
@@ -114,6 +118,9 @@ Memory Average:
 
 Aim Average:
 {aim_avg} ms
+
+Best Aim Completion Time:
+{aim_best} ms
 
 Total Tests Completed:
 {len(data['reaction_test']) + len(data['sequence_memory']) + len(data['aim_trainer'])}
@@ -162,31 +169,46 @@ Estimated Reaction Age:
 
         data = self.get_results()
 
-        reaction_scores = data["reaction_test"]
+        chart_data = {
+            "Reaction Time (ms)": data["reaction_test"],
+            "Sequence Memory": data["sequence_memory"],
+            "Aim Time (ms)": data["aim_trainer"]
+        }
 
-        if len(reaction_scores) < 2:
+        chart_data = {
+            name: scores
+            for name, scores in chart_data.items()
+            if scores
+        }
+
+        if not chart_data:
 
             messagebox.showinfo(
                 "Graph",
-                "Complete at least 2 reaction tests."
+                "Complete at least 1 reaction tests."
             )
             return
 
         plt.figure(figsize=(8, 5))
 
-        plt.plot(
-            range(1, len(reaction_scores)+1),
-            reaction_scores,
-            marker="o"
-        )
+        for label, scores in chart_data.items():
 
-        plt.title("Reaction Time Progress")
+            plt.plot(
+                range(1, len(scores) + 1),
+                scores,
+                marker="o",
+                label=label
+            )
+
+        plt.title("Test Progress")
 
         plt.xlabel("Attempt")
 
-        plt.ylabel("Milliseconds")
+        plt.ylabel("Score/Milliseconds")
 
         plt.grid(True)
+
+        plt.legend()
 
         plt.show()
 

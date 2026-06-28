@@ -41,16 +41,22 @@ class SequenceMemoryTest:
         for row in range(3):
             for col in range(3):
 
-                btn = tk.Button(
+                btn = tk.Label(
                     self.grid_frame,
                     width=10,
                     height=4,
                     bg="lightgrey",
-                    command=lambda i=len(self.buttons):
-                    self.user_click(i)
+                    relief="raised",
+                    bd=2,
+                    cursor="hand2"
                 )
 
                 btn.grid(row=row, column=col, padx=5, pady=5)
+                btn.bind(
+                    "<Button-1>",
+                    lambda event, i=len(self.buttons):
+                    self.user_click(i)
+                )
 
                 self.buttons.append(btn)
 
@@ -172,7 +178,9 @@ class AimTrainer:
         self.return_callback = return_callback
 
         self.targets_hit = 0
-        self.max_targets = 20
+        self.max_targets = 10
+        self.target_size = 60
+        self.start_time = None
 
         self.frame = tk.Frame(root)
         self.frame.pack(expand=True, fill="both")
@@ -181,7 +189,14 @@ class AimTrainer:
             self.frame,
             text="Aim Trainer",
             font=("Arial", 22, "bold")
-        ).pack()
+        ).pack(pady=10)
+
+        self.info_label = tk.Label(
+            self.frame,
+            text="Press Start to begin.",
+            font=("Arial", 14)
+        )
+        self.info_label.pack()
 
         self.canvas = tk.Canvas(
             self.frame,
@@ -192,7 +207,31 @@ class AimTrainer:
 
         self.canvas.pack()
 
-        self.start_time = time.time()
+        self.start_button = tk.Button(
+            self.frame,
+            text="Start",
+            width=20,
+            command=self.start_test
+        )
+        self.start_button.pack(pady=10)
+
+        tk.Button(
+            self.frame,
+            text="Back",
+            width=20,
+            command=self.close_test
+        ).pack()
+
+    def start_test(self):
+
+        self.targets_hit = 0
+        self.start_time = time.perf_counter()
+
+        self.start_button.config(state=tk.DISABLED)
+
+        self.info_label.config(
+            text=f"Targets hit: 0/{self.max_targets}"
+        )
 
         self.spawn_target()
 
@@ -205,14 +244,14 @@ class AimTrainer:
             self.finish_test()
             return
 
-        x = random.randint(50, 750)
-        y = random.randint(50, 400)
+        x = random.randint(50, 750 - self.target_size)
+        y = random.randint(50, 400 - self.target_size)
 
         self.target = self.canvas.create_oval(
             x,
             y,
-            x + 40,
-            y + 40,
+            x + self.target_size,
+            y + self.target_size,
             fill="red"
         )
 
@@ -224,31 +263,40 @@ class AimTrainer:
 
     def hit_target(self, event):
 
+        if self.start_time is None:
+            return
+
         self.targets_hit += 1
+
+        self.info_label.config(
+            text=f"Targets hit: {self.targets_hit}/{self.max_targets}"
+        )
 
         self.spawn_target()
 
     def finish_test(self):
 
-        total_time = (
-            time.time() - self.start_time
+        if self.start_time is None:
+            return
+
+        total_time = round(
+            (time.perf_counter() - self.start_time) * 1000,
+            2
         )
 
-        average_time = (
-            total_time / self.max_targets
-        ) * 1000
+        self.start_time = None
 
         users = load_users()
 
         users[self.username]["results"][
             "aim_trainer"
-        ].append(round(average_time, 2))
+        ].append(total_time)
 
         save_users(users)
 
         messagebox.showinfo(
             "Finished",
-            f"Average Target Time:\n{round(average_time,2)} ms"
+            f"Aim Time:\n{total_time} ms"
         )
 
         self.close_test()
