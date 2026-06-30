@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 
-from security import (
+from security import ( # Handles user storage + password security
     load_users,
     save_users,
     hash_password,
@@ -13,9 +13,9 @@ class LoginWindow:
 
     def __init__(self, root, login_success_callback):
         self.root = root
-        self.login_success_callback = login_success_callback
+        self.login_success_callback = login_success_callback # Function called after successful login (switches to main app)
 
-        self.frame = tk.Frame(root, padx=30, pady=30)
+        self.frame = tk.Frame(root, padx=30, pady=30)  # Main login UI container
         self.frame.pack(expand=True)
 
         title = tk.Label(
@@ -34,7 +34,7 @@ class LoginWindow:
 
         tk.Label(self.frame, text="Username").pack()
 
-        self.username_entry = tk.Entry(
+        self.username_entry = tk.Entry( # Input fields for credentials
             self.frame,
             width=30
         )
@@ -70,7 +70,7 @@ class LoginWindow:
 
         users = load_users()
 
-        if username not in users:
+        if username not in users:  # Check account exists and validate password
             messagebox.showerror(
                 "Login Failed",
                 "Account does not exist."
@@ -128,7 +128,7 @@ class LoginWindow:
             )
             return
 
-        hashed_password, salt = hash_password(password)
+        hashed_password, salt = hash_password(password) # Securely store password using hashing and salt
 
         users[username] = {
             "password": hashed_password,

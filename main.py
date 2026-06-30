@@ -18,9 +18,9 @@ class NeuralGap:
         self.root.geometry("900x600")
         self.root.configure(bg="white")
 
-        self.current_user = None
+        self.current_user = None  # Stores the username of whoever logs in successfully
 
-        LoginWindow(root, self.login_success)
+        LoginWindow(root, self.login_success)  # Opens the login window and waits until login succeeds
 
     def login_success(self, username):
 
@@ -30,7 +30,7 @@ class NeuralGap:
 
     def clear_window(self):
 
-        for widget in self.root.winfo_children():
+        for widget in self.root.winfo_children(): # Removes every widget currently on the screen so a new page can be loaded
             widget.destroy()
 
     def create_main_menu(self):
@@ -147,7 +147,7 @@ Your results are saved to your account and used for averages, best scores, and p
 
         self.clear_window()
 
-        self.waiting_for_click = False
+        self.waiting_for_click = False  # Used to check whether the user clicked before the green signal
 
         self.reaction_frame = tk.Frame(self.root)
         self.reaction_frame.pack(expand=True)
@@ -185,7 +185,7 @@ Your results are saved to your account and used for averages, best scores, and p
 
     def start_reaction_round(self):
 
-        self.reaction_button.config(
+        self.reaction_button.config( # Changes the button while the player waits for the random signal
             text="WAIT...",
             bg="red",
             command=self.clicked_too_early
@@ -193,7 +193,7 @@ Your results are saved to your account and used for averages, best scores, and p
 
         delay = random.randint(2000, 5000)
 
-        self.root.after(
+        self.root.after( # Runs turn_green() after the random delay has finished
             delay,
             self.turn_green
         )
@@ -209,7 +209,7 @@ Your results are saved to your account and used for averages, best scores, and p
 
     def turn_green(self):
 
-        self.waiting_for_click = True
+        self.waiting_for_click = True   # Starts timing as soon as the signal appears
 
         self.start_time = time.time()
 
@@ -221,10 +221,10 @@ Your results are saved to your account and used for averages, best scores, and p
 
     def record_reaction(self):
 
-        if not self.waiting_for_click:
+        if not self.waiting_for_click:  # Prevents invalid clicks from being recorded
             return
 
-        reaction_time = (
+        reaction_time = (  # Calculates the reaction time in milliseconds
             time.time() - self.start_time
         ) * 1000
 
@@ -241,18 +241,18 @@ Your results are saved to your account and used for averages, best scores, and p
 
     def save_reaction_result(self, score):
 
-        users = load_users()
+        users = load_users() # Loads the current user data from the JSON file
 
-        users[self.current_user]["results"][
+        users[self.current_user]["results"][  # Adds the new reaction time to the user's list of results
             "reaction_test"
         ].append(score)
 
-        save_users(users)
+        save_users(users) # Saves the updated data back to the JSON file
 
 
 if __name__ == "__main__":
 
-    root = tk.Tk()
+    root = tk.Tk() # Creates the main Tkinter window and starts the program
 
     app = NeuralGap(root)
 

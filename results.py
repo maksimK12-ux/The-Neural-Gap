@@ -62,29 +62,29 @@ class AnalyticsDashboard:
 
     def get_results(self):
 
-        users = load_users()
+        users = load_users() # Loads the logged-in user's saved test results
 
         return users[self.username]["results"]
 
     def average(self, values):
 
-        if not values:
+        if not values: # Prevents an error if no results have been recorded
             return 0
 
         return round(statistics.mean(values), 2)
 
     def best(self, values):
 
-        if not values:
+        if not values: # Returns 0 if there are no recorded results
             return 0
 
-        return min(values)
+        return min(values) # Lower reaction/aim times are considered better
 
     def show_statistics(self):
 
         data = self.get_results()
 
-        reaction_avg = self.average(
+        reaction_avg = self.average( # Calculates averages and best scores for each test
             data["reaction_test"]
         )
 
@@ -131,7 +131,7 @@ Total Tests Completed:
 
         data = self.get_results()
 
-        if not data["reaction_test"]:
+        if not data["reaction_test"]: # Stops the analysis if the user has not completed a reaction test
 
             messagebox.showinfo(
                 "Reaction Age",
@@ -142,7 +142,7 @@ Total Tests Completed:
         avg = self.average(
             data["reaction_test"]
         )
-
+          # Estimates a reaction age based on the average reaction time
         if avg < 200:
             age = "15-20 years"
         elif avg < 250:
@@ -169,13 +169,13 @@ Estimated Reaction Age:
 
         data = self.get_results()
 
-        chart_data = {
+        chart_data = { # Stores all available test data for graphing
             "Reaction Time (ms)": data["reaction_test"],
             "Sequence Memory": data["sequence_memory"],
             "Aim Time (ms)": data["aim_trainer"]
         }
 
-        chart_data = {
+        chart_data = { # Removes any tests that do not yet have results
             name: scores
             for name, scores in chart_data.items()
             if scores
@@ -191,7 +191,7 @@ Estimated Reaction Age:
 
         plt.figure(figsize=(8, 5))
 
-        for label, scores in chart_data.items():
+        for label, scores in chart_data.items(): # Draws a line for each completed test type
 
             plt.plot(
                 range(1, len(scores) + 1),
@@ -210,13 +210,13 @@ Estimated Reaction Age:
 
         plt.legend()
 
-        plt.show()
+        plt.show() # Displays the completed graph in a new window
 
     def export_results(self):
 
         users = load_users()
 
-        save_path = filedialog.asksaveasfilename(
+        save_path = filedialog.asksaveasfilename(  # Allows the user to choose where to save their exported results
             defaultextension=".json",
             filetypes=[("JSON Files", "*.json")]
         )
@@ -224,7 +224,7 @@ Estimated Reaction Age:
         if not save_path:
             return
 
-        with open(save_path, "w") as file:
+        with open(save_path, "w") as file:  # Writes the user's data to a new JSON file
 
             json.dump(
                 users[self.username],
@@ -239,6 +239,6 @@ Estimated Reaction Age:
 
     def close_dashboard(self):
 
-        self.frame.destroy()
+        self.frame.destroy() # Closes the analytics page and returns to the main menu
 
         self.return_callback()

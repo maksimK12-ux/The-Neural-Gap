@@ -13,9 +13,9 @@ class SequenceMemoryTest:
         self.username = username
         self.return_callback = return_callback
         
-        self.sequence = []
-        self.user_sequence = []
-        self.level = 1
+        self.sequence = [] # Stores the randomly generated pattern
+        self.user_sequence = []  # Stores the user's attempted pattern
+        self.level = 1 # Tracks the current level
 
         self.frame = tk.Frame(root)
         self.frame.pack(expand=True, fill="both")
@@ -52,8 +52,8 @@ class SequenceMemoryTest:
                 )
 
                 btn.grid(row=row, column=col, padx=5, pady=5)
-                btn.bind(
-                    "<Button-1>",
+                btn.bind(  # Passes the correct button index to user_click() when clicked
+                    "<Button-1>", 
                     lambda event, i=len(self.buttons):
                     self.user_click(i)
                 )
@@ -74,7 +74,7 @@ class SequenceMemoryTest:
 
     def start_game(self):
 
-        self.sequence.append(
+        self.sequence.append( # Adds one new random square to the sequence each round
             random.randint(0, 8)
         )
 
@@ -90,9 +90,9 @@ class SequenceMemoryTest:
 
         delay = 500
 
-        for position in self.sequence:
+        for position in self.sequence: # Uses increasing delays so each square flashes one after another
 
-            self.root.after(
+            self.root.after( 
                 delay,
                 lambda p=position:
                 self.highlight_button(p)
@@ -100,14 +100,14 @@ class SequenceMemoryTest:
 
             delay += 800
 
-        self.root.after(
+        self.root.after( # Enables user input once the sequence has finished displaying
             delay,
             self.enable_input
         )
 
     def highlight_button(self, index):
 
-        self.buttons[index].config(bg="yellow")
+        self.buttons[index].config(bg="yellow") # Briefly changes the button colour to show the sequence
 
         self.root.after(
             500,
@@ -125,16 +125,16 @@ class SequenceMemoryTest:
 
     def user_click(self, index):
 
-        self.user_sequence.append(index)
+        self.user_sequence.append(index) # Records each square selected by the user
 
         current = len(self.user_sequence) - 1
 
-        if self.user_sequence[current] != self.sequence[current]:
+        if self.user_sequence[current] != self.sequence[current]: # Ends the game immediately if an incorrect square is chosen
 
             self.end_game()
             return
 
-        if len(self.user_sequence) == len(self.sequence):
+        if len(self.user_sequence) == len(self.sequence): # Starts the next level once the full sequence is entered correctly
 
             self.level += 1
 
@@ -149,7 +149,7 @@ class SequenceMemoryTest:
 
         users = load_users()
 
-        users[self.username]["results"][
+        users[self.username]["results"][  # Saves the player's final score to the JSON file
             "sequence_memory"
         ].append(score)
 
@@ -164,7 +164,7 @@ class SequenceMemoryTest:
 
     def close_test(self):
 
-        self.frame.destroy()
+        self.frame.destroy()  # Closes the test and returns to the main menu
 
         self.return_callback()
 
@@ -225,9 +225,9 @@ class AimTrainer:
     def start_test(self):
 
         self.targets_hit = 0
-        self.start_time = time.perf_counter()
+        self.start_time = time.perf_counter() # Starts a high-precision timer for accurate measurements
 
-        self.start_button.config(state=tk.DISABLED)
+        self.start_button.config(state=tk.DISABLED) # Prevents the test from being started multiple times
 
         self.info_label.config(
             text=f"Targets hit: 0/{self.max_targets}"
@@ -237,14 +237,14 @@ class AimTrainer:
 
     def spawn_target(self):
 
-        self.canvas.delete("all")
+        self.canvas.delete("all")  # Removes the previous target before creating a new one
 
         if self.targets_hit >= self.max_targets:
 
             self.finish_test()
             return
 
-        x = random.randint(50, 750 - self.target_size)
+        x = random.randint(50, 750 - self.target_size)  # Generates a random location for the next target
         y = random.randint(50, 400 - self.target_size)
 
         self.target = self.canvas.create_oval(
@@ -255,7 +255,7 @@ class AimTrainer:
             fill="red"
         )
 
-        self.canvas.tag_bind(
+        self.canvas.tag_bind(  # Detects when the player clicks the target
             self.target,
             "<Button-1>",
             self.hit_target
@@ -266,20 +266,20 @@ class AimTrainer:
         if self.start_time is None:
             return
 
-        self.targets_hit += 1
+        self.targets_hit += 1  # Updates the number of successful hits
 
         self.info_label.config(
             text=f"Targets hit: {self.targets_hit}/{self.max_targets}"
         )
 
-        self.spawn_target()
+        self.spawn_target() # Creates another target after each successful click
 
     def finish_test(self):
 
         if self.start_time is None:
             return
 
-        total_time = round(
+        total_time = round(  # Calculates the total completion time in milliseconds
             (time.perf_counter() - self.start_time) * 1000,
             2
         )
@@ -288,7 +288,7 @@ class AimTrainer:
 
         users = load_users()
 
-        users[self.username]["results"][
+        users[self.username]["results"][  # Saves the completed aim test time
             "aim_trainer"
         ].append(total_time)
 
@@ -303,6 +303,6 @@ class AimTrainer:
 
     def close_test(self):
 
-        self.frame.destroy()
+        self.frame.destroy() # Returns the user to the main menu
 
         self.return_callback()
